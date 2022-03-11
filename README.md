@@ -1,4 +1,4 @@
-### Project 3 - Weeks 12 to 15: 15/03 - 16/04
+### Project 3 - Weeks 12 to 15: 18/03 - 17/04
 
 ### DHT Cooperative Mirroring with consistency protocol and Distributed Mutual Exclusion.
 
@@ -96,7 +96,7 @@ The tasks are divided into 7 parts
 In this task, you will implement the methods hashOf(), addressSize() and bitSize() in the Hash class. You must use the MD5 hash algorithm because the unit test cases class are generated using MD5 hash.
 MD5 compresses strings to 128bits, thus the address size will be 2^128 = 340282366920938463463374607431768211456.
 Note that the peers (process1, process2, process3, process4, process5) have been given identifiers from the same address space. You will find this in the Node class: nodeID = Hash.hashOf(nodename);
- - Testing: Use the DHTTestHashFunction to test your implementation. You do not need to start all the processes to test this functionality
+ - Testing: Use the DHTTestHashFunction to test your implementation. You do not need to start all the five processes to test this functionality
 
 #### Task 2 - Creating Replicas of file using the address space (2^128)
 This task requires that you replicate files using index from 0 to 3 (numReplicas = 4). You can simply use the Util.numReplicas for this purpose. That is, the index must be added to the filename to generate replicas. (e.g. for a file with name, "test", replicas will be:
@@ -107,7 +107,7 @@ test0, test1, test2, test3. Each replica will now be named using the hash functi
 The findSuccessor(id) method is a core method in the DHT system for recursively or iteratively resolving (looking up) a key from any node/peer. The first important task you must solve here before implementing the findsuccessor functions is to implement the logic to check the rule: lower <= id <= upper in the computeLogic() method in the Util class. For example, in mod 10, we check whether 9 lies between 6 and 2. It means id = 9, lower = 6 and upper = 2. (6, 2) in mod 10 = {6, 7, 8, 9, 0, 1, 2}. Your logic should return true. Further, we can check if id=6 lies between (6, 2). A correct implementation will return true. 
 You may need to read pg. 247-249 of the DS book and the original paper on chord system. The paper is on Canvas.
 After you have successfully implemented the logic, you can then implement the findSuccessor function in the ChordLookup class. To correctly implement this function, you need to maintain a finger table for each node and also implement findHighestPredecessor method that uses the finger table to find the closest predecessor peer to a key. For this project, the finger table has already been implemented.
- - Testing: Use the DHTTestComputeLogic and DHTTestFindSuccessor to test your implementations. You do not need to start all the processes to test DHTTestComputeLogic.
+ - Testing: Use the DHTTestComputeLogic and DHTTestFindSuccessor to test your implementations. You do not need to start all the five processes to test DHTTestComputeLogic but it is required to start them in order to test DHTTestFindSuccessor.
 
 #### Task 4 - Distributing file replicas to peers
 In the chord ring system, a peer has a predecessor and a successor. Identifiers (addresses) that are higher than the predecessor and lower or equal to the identifier of the peer are managed by the peer.
@@ -119,10 +119,10 @@ Your task is to implement the distributeReplicastoPeers() in the FileManager cla
 #### Task 5 - Finding the peers/servers responsible for a file
 To look up a file in a chord system, we need to perform the same process in Task 4, where we replicate the file and find the peers holding each replica according to the rule. The system then returns the peers to the client.
 The major task here is to implement the requestActiveNodesForFile() method in the FileManager. Given a filename, find all the peers that hold a copy of this file
-- Testing: Start all the processes, run the FileDistributorClient and then run the DHTTestFilePeers to test your implementation.
+- Testing: Start all the five processes, run the FileDistributorClient and then run the DHTTestFilePeers to test your implementation.
 
 #### Task 6 - Remote-write protocol
-The basic idea for remote write is that each file (data item) has a primary peer that is responsible for performing update. Whenever a client wants to update a file, it has to locate the primary for this file and forward the update request to it. Therefore, only one process (peer) can perform update. The primary can then tell other peers holding a copy of this file to update.
+The basic idea for remote write is that each file (data item) has a primary peer that is responsible for performing update and coordinating that other replicas perform this same update. Whenever a client wants to update a file, it has to locate the primary for this file and forward the update request to it. Therefore, only one process (peer) can perform update. The primary can then tell other peers holding a copy of this file to update.
 This arrangement is illustrated in the figure below.
 ![](assets/remote.png)
 We will implement this replicated-write protocol (remote-write) on top of the chord. One way to do this, is to tag a replica as the primary item before we distribute to the ring. The primaryServer variable in the Message class can be used for this purpose.
